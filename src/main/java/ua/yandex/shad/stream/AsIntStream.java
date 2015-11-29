@@ -1,25 +1,22 @@
 package ua.yandex.shad.stream;
 
+import ua.yandex.shad.collections.MyArrayList;
 import ua.yandex.shad.function.IntUnaryOperator;
 import ua.yandex.shad.function.IntToIntStreamFunction;
 import ua.yandex.shad.function.IntPredicate;
 import ua.yandex.shad.function.IntConsumer;
 import ua.yandex.shad.function.IntBinaryOperator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
 public class AsIntStream implements IntStream {
 
-    private ArrayList<Integer> list;
+    private MyArrayList list;
 
     private AsIntStream() {
-        list = new ArrayList<>();
+        list = new MyArrayList();
     }
 
     private AsIntStream(int... values) {
-        list = new ArrayList<>();
+        list = new MyArrayList();
         for (int i : values) {
             list.add(i);
         }
@@ -127,10 +124,10 @@ public class AsIntStream implements IntStream {
 
     @Override
     public int[] toArray() {
-        Object[] array = list.toArray();
+        Integer[] array = list.toArray();
         int[] res = new int[array.length];
         for (int i = 0; i < array.length; i++) {
-            res[i] = (Integer)array[i];
+            res[i] = array[i];
         }
         return res;
     }

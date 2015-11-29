@@ -51,7 +51,7 @@ public class AsIntStreamTest {
 
     @Test
     public void testMaxOnEmtpyArray() {
-        Integer actual = emptyStream.min();
+        Integer actual = emptyStream.max();
         assertNull(actual);
     }
 
