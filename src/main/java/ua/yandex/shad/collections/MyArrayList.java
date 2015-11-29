@@ -105,15 +105,11 @@ public class MyArrayList implements Iterable<Integer> {
         return elementData == EMPTY_DATA;
     }
 
-    public Integer[] toArray() {
+    public int[] toArray() {
         if (elementData == EMPTY_DATA) {
-            return null;
+            return EMPTY_DATA;
         }
-        Integer[] res = new Integer[elementData.length];
-        for (int i = 0; i < elementData.length; i++) {
-            res[i] = elementData[i];
-        }
-        return res;
+        return Arrays.copyOf(elementData, size);
     }
     
     public int size() {
