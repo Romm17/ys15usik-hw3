@@ -104,10 +104,11 @@ public class AsIntStream implements IntStream {
 
     @Override
     public int reduce(int identity, IntBinaryOperator op) {
+        int result = identity;
         for (Integer i : list) {
-            identity = op.apply(identity, i);
+            result = op.apply(result, i);
         }
-        return identity;
+        return result;
     }
 
     @Override
