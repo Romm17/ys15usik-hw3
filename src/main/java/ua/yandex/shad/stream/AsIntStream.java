@@ -35,8 +35,8 @@ public class AsIntStream implements IntStream {
         if (list.isEmpty()) {
             return null;
         }
-        Double sum = 0.0;
-        for (Integer i : list) {
+        double sum = 0.0;
+        for (int i : list) {
             sum += i;
         }
         return sum / list.size();
@@ -47,8 +47,8 @@ public class AsIntStream implements IntStream {
         if (list.isEmpty()) {
             return null;
         }
-        Integer max = Integer.MIN_VALUE;
-        for (Integer i : list) {
+        int max = Integer.MIN_VALUE;
+        for (int i : list) {
             if (i > max) {
                 max = i;
             }
@@ -61,8 +61,8 @@ public class AsIntStream implements IntStream {
         if (list.isEmpty()) {
             return null;
         }
-        Integer min = Integer.MAX_VALUE;
-        for (Integer i : list) {
+        int min = Integer.MAX_VALUE;
+        for (int i : list) {
             if (i < min) {
                 min = i;
             }
@@ -78,7 +78,7 @@ public class AsIntStream implements IntStream {
     @Override
     public IntStream filter(IntPredicate predicate) {
         AsIntStream res = new AsIntStream();
-        for (Integer i : list) {
+        for (int i : list) {
             if (predicate.test(i)) {
                 res.add(i);
             }
@@ -88,7 +88,7 @@ public class AsIntStream implements IntStream {
 
     @Override
     public void forEach(IntConsumer action) {
-        for (Integer i : list) {
+        for (int i : list) {
             action.accept(i);
         }
     }
@@ -96,7 +96,7 @@ public class AsIntStream implements IntStream {
     @Override
     public IntStream map(IntUnaryOperator mapper) {
         AsIntStream res = new AsIntStream();
-        for (Integer i : list) {
+        for (int i : list) {
             res.add(mapper.apply(i));
         }
         return res;
@@ -105,7 +105,7 @@ public class AsIntStream implements IntStream {
     @Override
     public int reduce(int identity, IntBinaryOperator op) {
         int result = identity;
-        for (Integer i : list) {
+        for (int i : list) {
             result = op.apply(result, i);
         }
         return result;
@@ -116,8 +116,8 @@ public class AsIntStream implements IntStream {
         if (list.isEmpty()) {
             return null;
         }
-        Integer sum = 0;
-        for (Integer i : list) {
+        int sum = 0;
+        for (int i : list) {
             sum += i;
         }
         return sum;
@@ -131,7 +131,7 @@ public class AsIntStream implements IntStream {
     @Override
     public IntStream flatMap(IntToIntStreamFunction func) {
         AsIntStream res = new AsIntStream();
-        for (Integer i : list) {
+        for (int i : list) {
             int[] result = func.applyAsIntStream(i).toArray();
             for (int j : result) {
                 res.add(j);

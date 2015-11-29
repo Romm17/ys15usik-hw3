@@ -43,7 +43,7 @@ public class MyArrayList implements Iterable<Integer> {
     }
     
     /**
-     * Represents an optimized version of Iterator<E>
+     * Represents an optimized version of Iterator
      */
     private class Itr implements Iterator<Integer> {
 
