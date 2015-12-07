@@ -101,6 +101,20 @@ public class MyArrayList implements Iterable<Integer> {
         return true;
     }
 
+    public int get(int index) throws ArrayIndexOutOfBoundsException {
+        if (index < 0 || index > size) {
+            throw new ArrayIndexOutOfBoundsException("Illegal index");
+        }
+        return elementData[index];
+    }
+
+    public void set(int index, int value) throws ArrayIndexOutOfBoundsException {
+        if (index < 0 || index > size) {
+            throw new ArrayIndexOutOfBoundsException("Illegal index");
+        }
+        elementData[index] = value;
+    }
+
     public boolean isEmpty() {
         return elementData == EMPTY_DATA;
     }

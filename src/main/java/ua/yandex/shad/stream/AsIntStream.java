@@ -7,19 +7,26 @@ import ua.yandex.shad.function.IntPredicate;
 import ua.yandex.shad.function.IntConsumer;
 import ua.yandex.shad.function.IntBinaryOperator;
 
+import java.util.LinkedList;
+
 public class AsIntStream implements IntStream {
 
     private MyArrayList list;
+    private AsIntStream result;
+
+    private LinkedList<Object> functions;
 
     private AsIntStream() {
         list = new MyArrayList();
+        functions = new LinkedList<>();
     }
 
-    private AsIntStream(int... values) {
+    private AsIntStream(int ... values) {
         list = new MyArrayList();
         for (int i : values) {
             list.add(i);
         }
+        functions = new LinkedList<>();
     }
 
     public static IntStream of(int... values) {
@@ -32,23 +39,25 @@ public class AsIntStream implements IntStream {
 
     @Override
     public Double average() {
-        if (list.isEmpty()) {
+        clearStack();
+        if (result.list.isEmpty()) {
             return null;
         }
         double sum = 0.0;
-        for (int i : list) {
+        for (int i : result.list) {
             sum += i;
         }
-        return sum / list.size();
+        return sum / result.list.size();
     }
 
     @Override
     public Integer max() {
-        if (list.isEmpty()) {
+        clearStack();
+        if (result.list.isEmpty()) {
             return null;
         }
         int max = Integer.MIN_VALUE;
-        for (int i : list) {
+        for (int i : result.list) {
             if (i > max) {
                 max = i;
             }
@@ -58,11 +67,12 @@ public class AsIntStream implements IntStream {
 
     @Override
     public Integer min() {
-        if (list.isEmpty()) {
+        clearStack();
+        if (result.list.isEmpty()) {
             return null;
         }
         int min = Integer.MAX_VALUE;
-        for (int i : list) {
+        for (int i : result.list) {
             if (i < min) {
                 min = i;
             }
@@ -72,52 +82,64 @@ public class AsIntStream implements IntStream {
 
     @Override
     public long count() {
-        return list.size();
+        clearStack();
+        return result.list.size();
     }
 
-    @Override
-    public IntStream filter(IntPredicate predicate) {
+    private void filter(IntPredicate predicate, int notused) {
         AsIntStream res = new AsIntStream();
-        for (int i : list) {
+        for (int i : result.list) {
             if (predicate.test(i)) {
                 res.add(i);
             }
         }
-        return res;
+        result = res;
+    }
+
+    @Override
+    public IntStream filter(IntPredicate predicate) {
+        functions.add(predicate);
+        return this;
     }
 
     @Override
     public void forEach(IntConsumer action) {
-        for (int i : list) {
+        clearStack();
+        for (int i : result.list) {
             action.accept(i);
+        }
+    }
+
+    public void map(IntUnaryOperator mapper, int notused) {
+        for (int i = 0; i < result.list.size(); i++) {
+            result.list.set(i, mapper.apply(result.list.get(i)));
         }
     }
 
     @Override
     public IntStream map(IntUnaryOperator mapper) {
-        AsIntStream res = new AsIntStream();
-        for (int i : list) {
-            res.add(mapper.apply(i));
+        functions.add(mapper);
+        return this;
+    }
+
+    @Override
+    public int reduce(int identity, IntBinaryOperator op) {
+        clearStack();
+        int res = identity;
+        for (int i : result.list) {
+            res = op.apply(res, i);
         }
         return res;
     }
 
     @Override
-    public int reduce(int identity, IntBinaryOperator op) {
-        int result = identity;
-        for (int i : list) {
-            result = op.apply(result, i);
-        }
-        return result;
-    }
-
-    @Override
     public Integer sum() {
-        if (list.isEmpty()) {
+        clearStack();
+        if (result.list.isEmpty()) {
             return null;
         }
         int sum = 0;
-        for (int i : list) {
+        for (int i : result.list) {
             sum += i;
         }
         return sum;
@@ -125,19 +147,49 @@ public class AsIntStream implements IntStream {
 
     @Override
     public int[] toArray() {
-        return list.toArray();
+        clearStack();
+        return result.list.toArray();
     }
 
-    @Override
-    public IntStream flatMap(IntToIntStreamFunction func) {
+    public void flatMap(IntToIntStreamFunction func, int notused) {
         AsIntStream res = new AsIntStream();
-        for (int i : list) {
+        for (int i : result.list) {
             int[] result = func.applyAsIntStream(i).toArray();
             for (int j : result) {
                 res.add(j);
             }
         }
-        return res;
+        result = res;
+    }
+
+    @Override
+    public IntStream flatMap(IntToIntStreamFunction func) {
+        functions.add(func);
+        return this;
+    }
+
+    private void clearStack() {
+        result = new AsIntStream(this.list.toArray());
+        System.out.println("Clearing stack: ");
+        for (int i : result.list) {
+            System.out.print(i + " ");
+        }
+        System.out.println();
+        for (Object o : functions) {
+            if (o instanceof IntPredicate) {
+                filter((IntPredicate)o, 0);
+            }
+            else if (o instanceof IntUnaryOperator) {
+                map((IntUnaryOperator)o, 0);
+            }
+            else {
+                flatMap((IntToIntStreamFunction)o, 0);
+            }
+        }
+        for (int i : result.list) {
+            System.out.print(i + " ");
+        }
+        System.out.println();
     }
 
 }
