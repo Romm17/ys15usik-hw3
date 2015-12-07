@@ -86,7 +86,7 @@ public class AsIntStream implements IntStream {
         return result.list.size();
     }
 
-    private void filter(IntPredicate predicate, int notused) {
+    private void realFilter(IntPredicate predicate) {
         AsIntStream res = new AsIntStream();
         for (int i : result.list) {
             if (predicate.test(i)) {
@@ -110,7 +110,7 @@ public class AsIntStream implements IntStream {
         }
     }
 
-    public void map(IntUnaryOperator mapper, int notused) {
+    public void realMap(IntUnaryOperator mapper) {
         for (int i = 0; i < result.list.size(); i++) {
             result.list.set(i, mapper.apply(result.list.get(i)));
         }
@@ -151,11 +151,11 @@ public class AsIntStream implements IntStream {
         return result.list.toArray();
     }
 
-    public void flatMap(IntToIntStreamFunction func, int notused) {
+    public void realFlatMap(IntToIntStreamFunction func) {
         AsIntStream res = new AsIntStream();
         for (int i : result.list) {
-            int[] result = func.applyAsIntStream(i).toArray();
-            for (int j : result) {
+            int[] array = func.applyAsIntStream(i).toArray();
+            for (int j : array) {
                 res.add(j);
             }
         }
@@ -170,26 +170,17 @@ public class AsIntStream implements IntStream {
 
     private void clearStack() {
         result = new AsIntStream(this.list.toArray());
-        System.out.println("Clearing stack: ");
-        for (int i : result.list) {
-            System.out.print(i + " ");
-        }
-        System.out.println();
         for (Object o : functions) {
             if (o instanceof IntPredicate) {
-                filter((IntPredicate)o, 0);
+                realFilter((IntPredicate) o);
             }
             else if (o instanceof IntUnaryOperator) {
-                map((IntUnaryOperator)o, 0);
+                realMap((IntUnaryOperator) o);
             }
             else {
-                flatMap((IntToIntStreamFunction)o, 0);
+                realFlatMap((IntToIntStreamFunction) o);
             }
         }
-        for (int i : result.list) {
-            System.out.print(i + " ");
-        }
-        System.out.println();
     }
 
 }
